@@ -1,76 +1,829 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>VALORANT Tracker Bot</title>
 
+    <meta
+        name="description"
+        content="VALORANT Tracker Bot - View your authorized VALORANT statistics and match history directly through Discord."
+    >
+
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 60px auto;
-            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #0b0d12;
+            color: #ffffff;
             line-height: 1.6;
         }
 
-        h1 {
-            font-size: 36px;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
+
+        .container {
+            width: min(1100px, 90%);
+            margin: auto;
+        }
+
+        /* HEADER */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 13, 18, 0.95);
+            border-bottom: 1px solid #252936;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: #ff4655;
+        }
+
+        nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: #b9bdc9;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        /* HERO */
+
+        .hero {
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            background:
+                radial-gradient(circle at top, #202531 0%, #0b0d12 55%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 14px;
+            border: 1px solid #343946;
+            border-radius: 30px;
+            color: #bfc4d0;
+            font-size: 13px;
+            margin-bottom: 25px;
+            background: #12151c;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 7vw, 76px);
+            line-height: 1;
+            margin-bottom: 25px;
+            font-weight: 900;
+        }
+
+        .hero h1 span {
+            color: #ff4655;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: #b8bdc9;
+            font-size: 18px;
+        }
+
+        .buttons {
+            margin-top: 35px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 13px 24px;
+            border-radius: 7px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .button-primary {
+            background: #ff4655;
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: #ff5c69;
+            transform: translateY(-2px);
+        }
+
+        .button-secondary {
+            border: 1px solid #343946;
+            color: white;
+            background: #151820;
+        }
+
+        .button-secondary:hover {
+            background: #1d212b;
+        }
+
+        /* SECTIONS */
 
         section {
-            margin-top: 35px;
+            padding: 90px 0;
         }
 
-        footer {
-            margin-top: 60px;
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .section-title p {
+            color: #9da3b1;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        /* FEATURES */
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: #12151c;
+            border: 1px solid #252936;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .card-icon {
+            font-size: 30px;
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            color: #9da3b1;
+            font-size: 15px;
+        }
+
+        /* HOW IT WORKS */
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .step {
+            background: #12151c;
+            border: 1px solid #252936;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .number {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #ff4655;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .step h3 {
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: #9da3b1;
             font-size: 14px;
+        }
+
+        /* STATS */
+
+        .stats-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .stat {
+            background: #12151c;
+            border: 1px solid #252936;
+            border-radius: 10px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .stat span {
+            color: #8f95a3;
+            font-size: 13px;
+        }
+
+        /* PRIVACY */
+
+        .info-box {
+            max-width: 850px;
+            margin: auto;
+            background: #12151c;
+            border: 1px solid #252936;
+            border-radius: 12px;
+            padding: 35px;
+        }
+
+        .info-box h3 {
+            margin-bottom: 12px;
+        }
+
+        .info-box p {
+            color: #aeb3bf;
+            margin-bottom: 20px;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* CTA */
+
+        .cta {
+            text-align: center;
+            background: #11141b;
+            border-top: 1px solid #252936;
+            border-bottom: 1px solid #252936;
+        }
+
+        .cta h2 {
+            font-size: 38px;
+            margin-bottom: 15px;
+        }
+
+        .cta p {
+            color: #9da3b1;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        /* FOOTER */
+
+        footer {
+            padding: 35px 0;
+            text-align: center;
+            color: #777d8a;
+            font-size: 13px;
+        }
+
+        footer a {
+            color: #aeb3bf;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+            nav {
+                display: none;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-preview {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .hero {
+                min-height: 580px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-preview {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            section {
+                padding: 65px 0;
+            }
+
+            .info-box {
+                padding: 25px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <h1>VALORANT Tracker Bot</h1>
+<header>
+    <div class="container navbar">
 
-    <p>
-        A Discord bot designed to help VALORANT players
-        view their own game statistics and match history.
-    </p>
+        <a href="#" class="logo">
+            VALORANT <span>TRACKER</span>
+        </a>
 
-    <section>
-        <h2>Features</h2>
+        <nav>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#privacy">Privacy</a>
+        </nav>
 
-        <ul>
-            <li>View VALORANT player statistics</li>
-            <li>View match history</li>
-            <li>View rank information</li>
-            <li>View agent statistics</li>
-        </ul>
+    </div>
+</header>
+
+
+<main>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="container hero-content">
+
+            <div class="badge">
+                Discord VALORANT Statistics Bot
+            </div>
+
+            <h1>
+                Your VALORANT stats.<br>
+                <span>Inside Discord.</span>
+            </h1>
+
+            <p>
+                VALORANT Tracker Bot allows players to securely connect
+                their Riot Account and view their authorized VALORANT
+                statistics and match history directly through Discord.
+            </p>
+
+            <div class="buttons">
+
+                <a
+                    class="button button-primary"
+                    href="https://discord.com/oauth2/authorize?client_id=YOUR_BOT_CLIENT_ID&permissions=0&scope=bot%20applications.commands"
+                    target="_blank"
+                >
+                    Add to Discord
+                </a>
+
+                <a
+                    class="button button-secondary"
+                    href="#how-it-works"
+                >
+                    Learn More
+                </a>
+
+            </div>
+
+        </div>
+
     </section>
 
+
+    <!-- FEATURES -->
+
+    <section id="features">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Features</h2>
+
+                <p>
+                    Everything you need to keep track of your VALORANT
+                    performance directly from your Discord server.
+                </p>
+
+            </div>
+
+
+            <div class="features">
+
+                <div class="card">
+
+                    <div class="card-icon">📊</div>
+
+                    <h3>Player Statistics</h3>
+
+                    <p>
+                        View authorized statistics such as K/D,
+                        headshot percentage, win rate and average
+                        performance.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">🏆</div>
+
+                    <h3>Competitive Rank</h3>
+
+                    <p>
+                        Check your current competitive rank,
+                        RR and other available ranked information.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">📜</div>
+
+                    <h3>Match History</h3>
+
+                    <p>
+                        View your recent authorized match history
+                        directly through Discord commands.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">🎯</div>
+
+                    <h3>Agent Statistics</h3>
+
+                    <p>
+                        See information about your agent usage
+                        and performance when available.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">🔐</div>
+
+                    <h3>Riot Sign On</h3>
+
+                    <p>
+                        Players authenticate through Riot Sign On
+                        and explicitly authorize the application
+                        to access their data.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">💬</div>
+
+                    <h3>Discord Integration</h3>
+
+                    <p>
+                        Access your authorized VALORANT information
+                        through simple Discord slash commands.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+
+    <section id="how-it-works">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>How It Works</h2>
+
+                <p>
+                    The application is designed around explicit
+                    player authorization.
+                </p>
+
+            </div>
+
+
+            <div class="steps">
+
+                <div class="step">
+
+                    <div class="number">1</div>
+
+                    <h3>Join Discord</h3>
+
+                    <p>
+                        Add VALORANT Tracker Bot to your Discord server.
+                    </p>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="number">2</div>
+
+                    <h3>Authenticate</h3>
+
+                    <p>
+                        Sign in with your Riot Account through
+                        Riot Sign On.
+                    </p>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="number">3</div>
+
+                    <h3>Authorize</h3>
+
+                    <p>
+                        Explicitly authorize the application to
+                        access your permitted VALORANT data.
+                    </p>
+
+                </div>
+
+
+                <div class="step">
+
+                    <div class="number">4</div>
+
+                    <h3>View Stats</h3>
+
+                    <p>
+                        Use Discord commands to view your authorized
+                        statistics and match history.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATS PREVIEW -->
+
     <section>
-        <h2>Privacy</h2>
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Track Your Performance</h2>
+
+                <p>
+                    The bot will display information provided by
+                    the official VALORANT APIs when available.
+                </p>
+
+            </div>
+
+
+            <div class="stats-preview">
+
+                <div class="stat">
+                    <strong>K/D</strong>
+                    <span>Kill / Death Ratio</span>
+                </div>
+
+                <div class="stat">
+                    <strong>HS%</strong>
+                    <span>Headshot Percentage</span>
+                </div>
+
+                <div class="stat">
+                    <strong>WR%</strong>
+                    <span>Win Rate</span>
+                </div>
+
+                <div class="stat">
+                    <strong>RR</strong>
+                    <span>Rank Rating</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRIVACY -->
+
+    <section id="privacy">
+
+        <div class="container">
+
+            <div class="section-title">
+
+                <h2>Privacy & Authorization</h2>
+
+                <p>
+                    Player data belongs to the player and access
+                    is based on explicit authorization.
+                </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>🔐 Player Authorization</h3>
+
+                <p>
+                    VALORANT Tracker Bot requires players to
+                    authenticate through Riot Sign On (RSO) and
+                    explicitly authorize the application before
+                    accessing their personal VALORANT data.
+                </p>
+
+
+                <h3>📋 Data Usage</h3>
+
+                <p>
+                    The application is designed to use authorized
+                    player information only for providing the
+                    statistics and match history features described
+                    on this website.
+                </p>
+
+
+                <h3>🚫 What the Bot Does Not Provide</h3>
+
+                <p>
+                    The application does not provide real-time
+                    gameplay information, opponent scouting,
+                    item store checking, or an alternative MMR/ELO
+                    ranking system.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section class="cta">
+
+        <div class="container">
+
+            <h2>Ready to track your stats?</h2>
+
+            <p>
+                Connect VALORANT Tracker Bot to your Discord
+                community and access your authorized VALORANT
+                statistics directly from Discord.
+            </p>
+
+            <div class="buttons">
+
+                <a
+                    class="button button-primary"
+                    href="https://discord.com/oauth2/authorize?client_id=YOUR_BOT_CLIENT_ID&permissions=0&scope=bot%20applications.commands"
+                    target="_blank"
+                >
+                    Add to Discord
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="container">
+
+        <div class="footer-links">
+
+            <a href="#features">Features</a>
+
+            <a href="#how-it-works">How It Works</a>
+
+            <a href="#privacy">Privacy</a>
+
+        </div>
+
 
         <p>
-            Player data is accessed only after the player
-            explicitly authorizes the application.
+            VALORANT Tracker Bot is an independent community project
+            and is not affiliated with or endorsed by Riot Games.
         </p>
-    </section>
-
-    <section>
-        <h2>Contact</h2>
 
         <p>
-            VALORANT Tracker Bot is currently under development.
+            VALORANT and Riot Games are trademarks of Riot Games, Inc.
         </p>
-    </section>
 
-    <footer>
-        VALORANT Tracker Bot
-    </footer>
+        <br>
+
+        <p>
+            © 2026 VALORANT Tracker Bot
+        </p>
+
+    </div>
+
+</footer>
 
 </body>
-</html> 
-<!-- GitHub Pages deployment -->
+</html>
